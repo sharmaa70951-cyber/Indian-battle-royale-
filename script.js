@@ -369,65 +369,51 @@ window.addEventListener("resize", () => {
   zoneCenterY = window.innerHeight / 2;
 
   updateZone();
-});
-/* LOOT */
-.loot {
-  position: absolute;
-  z-index: 15;
-  width: 45px;
-  height: 45px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-  background: rgba(0,0,0,.75);
-  border: 2px solid white;
-  font-size: 25px;
-  cursor: pointer;
-  animation: lootPulse 1s infinite alternate;
-}
+});                   
+// ================= LOOT & WEAPONS =================
 
-.pistol {
-  left: 25%;
-  top: 45%;
-}
+let currentWeapon = "Pistol";
+let maxAmmo = 30;
 
-.ak {
-  left: 70%;
-  top: 55%;
-}
+function pickupLoot(item, type) {
 
-.sniper {
-  left: 45%;
-  top: 25%;
-}
+  if (gameOver) return;
 
-.ammo {
-  left: 60%;
-  top: 35%;
-}
-
-.medkit {
-  left: 30%;
-  top: 70%;
-}
-
-@keyframes lootPulse {
-  from {
-    transform: scale(1);
+  if (type === "Pistol") {
+    currentWeapon = "Pistol";
+    maxAmmo = 30;
+    ammo = maxAmmo;
   }
-  to {
-    transform: scale(1.12);
-  }
-}
 
-#weaponHUD {
-  position: fixed;
-  z-index: 60;
-  top: 65px;
-  left: 12px;
-  background: rgba(0,0,0,.75);
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-weight: bold;
+  if (type === "AK-47") {
+    currentWeapon = "AK-47";
+    maxAmmo = 60;
+    ammo = maxAmmo;
+  }
+
+  if (type === "Sniper") {
+    currentWeapon = "Sniper";
+    maxAmmo = 10;
+    ammo = maxAmmo;
+  }
+
+  if (type === "Ammo") {
+    ammo += 30;
+  }
+
+  if (type === "Medkit") {
+    hp += 30;
+
+    if (hp > 100) {
+      hp = 100;
+    }
+
+    hpText.textContent = hp;
+  }
+
+  ammoText.textContent = ammo;
+
+  document.getElementById("weapon").textContent = currentWeapon;
+
+  item.remove();
 }
