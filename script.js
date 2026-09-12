@@ -3,6 +3,7 @@ const player = document.getElementById("player");
 const hpText = document.getElementById("hp");
 const ammoText = document.getElementById("ammo");
 const aliveText = document.getElementById("alive");
+const zone = document.getElementById("zone");
 
 let x = window.innerWidth / 2;
 let y = window.innerHeight / 2;
@@ -14,7 +15,7 @@ let gameOver = false;
 
 const enemies = [];
 
-// ---------------- PLAYER ----------------
+// ================= PLAYER =================
 
 function updatePlayer() {
   player.style.left = x + "px";
@@ -37,7 +38,58 @@ function move(direction) {
   updatePlayer();
 }
 
-// ---------------- ENEMY BOTS ----------------
+// ================= SAFE ZONE =================
+
+let zoneRadius = 350;
+let zoneCenterX = window.innerWidth / 2;
+let zoneCenterY = window.innerHeight / 2;
+
+function updateZone() {
+  zone.style.width = (zoneRadius * 2) + "px";
+  zone.style.height = (zoneRadius * 2) + "px";
+  zone.style.left = zoneCenterX + "px";
+  zone.style.top = zoneCenterY + "px";
+}
+
+function checkZone() {
+  if (gameOver) return;
+
+  const dx = x - zoneCenterX;
+  const dy = y - zoneCenterY;
+
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  // Player outside safe zone
+  if (distance > zoneRadius) {
+
+    hp -= 2;
+
+    if (hp < 0) hp = 0;
+
+    hpText.textContent = hp;
+
+    if (hp <= 0) {
+      loseGame();
+    }
+  }
+}
+
+// Zone धीरे-धीरे छोटी होगी
+setInterval(() => {
+
+  if (gameOver) return;
+
+  if (zoneRadius > 110) {
+    zoneRadius -= 25;
+    updateZone();
+  }
+
+}, 10000);
+
+// Zone damage
+setInterval(checkZone, 1000);
+
+// ================= ENEMY BOTS =================
 
 function createEnemy() {
 
@@ -69,8 +121,6 @@ function createEnemy() {
   enemy.style.left = ex + "px";
   enemy.style.top = ey + "px";
 
-  enemy.dataset.hp = "100";
-
   game.appendChild(enemy);
 
   enemies.push({
@@ -81,12 +131,12 @@ function createEnemy() {
   });
 }
 
-// Create 12 visible bots for prototype
+// Prototype bots
 for (let i = 0; i < 12; i++) {
   createEnemy();
 }
 
-// ---------------- SHOOTING ----------------
+// ================= SHOOTING =================
 
 function shoot() {
 
@@ -100,7 +150,6 @@ function shoot() {
   ammo--;
   ammoText.textContent = ammo;
 
-  // Find nearest enemy
   let nearest = null;
   let nearestDistance = Infinity;
 
@@ -117,10 +166,8 @@ function shoot() {
       nearestDistance = distance;
       nearest = enemy;
     }
-
   });
 
-  // Bullet visual
   const bullet = document.createElement("div");
 
   bullet.style.position = "absolute";
@@ -143,7 +190,7 @@ function shoot() {
   const dx = targetX - bx;
   const dy = targetY - by;
 
-  const distance = Math.sqrt(dx * dx + dy * dy);
+  const distance = Math.sqrt(dx * dx + dy * dy) || 1;
 
   const vx = dx / distance * 14;
   const vy = dy / distance * 14;
@@ -183,7 +230,6 @@ function shoot() {
 
           checkWinner();
         }
-
       }
     }
 
@@ -200,7 +246,7 @@ function shoot() {
   }, 20);
 }
 
-// ---------------- ENEMY ATTACK ----------------
+// ================= ENEMY ATTACK =================
 
 function enemyAttack() {
 
@@ -208,14 +254,11 @@ function enemyAttack() {
 
   enemies.forEach(enemy => {
 
-    if (enemy.hp <= 0) return;
-
     const dx = x - enemy.x;
     const dy = y - enemy.y;
 
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    // Bots attack when nearby
     if (distance < 280) {
 
       hp -= 2;
@@ -227,40 +270,35 @@ function enemyAttack() {
       if (hp <= 0) {
         loseGame();
       }
-
     }
-
   });
 }
 
-// Enemy movement
+// ================= ENEMY MOVEMENT =================
+
 function moveEnemies() {
 
   if (gameOver) return;
 
   enemies.forEach(enemy => {
 
-    if (enemy.hp <= 0) return;
-
     const dx = x - enemy.x;
     const dy = y - enemy.y;
 
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    if (distance > 100) {
+    if (distance > 100 && distance > 0) {
 
       enemy.x += dx / distance * 0.8;
       enemy.y += dy / distance * 0.8;
-
     }
 
     enemy.element.style.left = enemy.x + "px";
     enemy.element.style.top = enemy.y + "px";
-
   });
 }
 
-// ---------------- WIN / LOSE ----------------
+// ================= WIN =================
 
 function checkWinner() {
 
@@ -270,7 +308,8 @@ function checkWinner() {
 
     const message = document.createElement("div");
 
-    message.innerHTML = "🏆 YOU WIN!<br><small>Last Player Standing</small>";
+    message.innerHTML =
+      "🏆 YOU WIN!<br><small>Last Player Standing</small>";
 
     message.style.position = "fixed";
     message.style.left = "50%";
@@ -288,13 +327,18 @@ function checkWinner() {
   }
 }
 
+// ================= LOSE =================
+
 function loseGame() {
+
+  if (gameOver) return;
 
   gameOver = true;
 
   const message = document.createElement("div");
 
-  message.innerHTML = "💀 ELIMINATED<br><small>Better luck next time</small>";
+  message.innerHTML =
+    "💀 ELIMINATED<br><small>Better luck next time</small>";
 
   message.style.position = "fixed";
   message.style.left = "50%";
@@ -311,9 +355,18 @@ function loseGame() {
   document.body.appendChild(message);
 }
 
-// ---------------- GAME LOOP ----------------
+// ================= GAME LOOP =================
 
 setInterval(enemyAttack, 1000);
 setInterval(moveEnemies, 40);
 
 updatePlayer();
+updateZone();
+
+window.addEventListener("resize", () => {
+
+  zoneCenterX = window.innerWidth / 2;
+  zoneCenterY = window.innerHeight / 2;
+
+  updateZone();
+});
