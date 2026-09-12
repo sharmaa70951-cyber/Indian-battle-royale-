@@ -6,7 +6,10 @@
   <title>India Battle Royale</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
+<!-- ================= HUD ================= -->
 
 <div id="hud">
   <div>❤️ HP <span id="hp">100</span></div>
@@ -14,10 +17,23 @@
   <div>🔫 AMMO <span id="ammo">30</span></div>
 </div>
 
+<!-- CURRENT WEAPON -->
+
+<div id="weaponHUD">
+  🔫 Weapon:
+  <span id="weapon">Pistol</span>
+</div>
+
+
+<!-- ================= GAME ================= -->
+
 <div id="game">
 
   <!-- SAFE ZONE -->
   <div id="zone"></div>
+
+
+  <!-- ================= FORTS ================= -->
 
   <!-- CHITTORGARH -->
   <div class="fort chittor">
@@ -28,6 +44,7 @@
     <span>CHITTORGARH</span>
   </div>
 
+
   <!-- RED FORT -->
   <div class="fort redfort">
     <div class="wall"></div>
@@ -36,6 +53,7 @@
     <div class="gate">GATE</div>
     <span>RED FORT</span>
   </div>
+
 
   <!-- MEHRANGARH -->
   <div class="fort mehrangarh">
@@ -46,26 +64,98 @@
     <span>MEHRANGARH</span>
   </div>
 
-  <!-- PLAYER -->
+
+  <!-- ================= LOOT ================= -->
+
+  <!-- PISTOL -->
+  <div
+    class="loot pistol"
+    onclick="pickupLoot(this,'Pistol')">
+    🔫
+  </div>
+
+
+  <!-- AK-47 -->
+  <div
+    class="loot ak"
+    onclick="pickupLoot(this,'AK-47')">
+    🔫
+  </div>
+
+
+  <!-- SNIPER -->
+  <div
+    class="loot sniper"
+    onclick="pickupLoot(this,'Sniper')">
+    🎯
+  </div>
+
+
+  <!-- AMMO -->
+  <div
+    class="loot ammo"
+    onclick="pickupLoot(this,'Ammo')">
+    📦
+  </div>
+
+
+  <!-- MEDKIT -->
+  <div
+    class="loot medkit"
+    onclick="pickupLoot(this,'Medkit')">
+    ❤️
+  </div>
+
+
+  <!-- ================= PLAYER ================= -->
+
   <div id="player">
+
     <div class="head"></div>
+
     <div class="body"></div>
+
     <div class="gun"></div>
+
   </div>
 
 </div>
 
-<!-- MOBILE CONTROLS -->
+
+<!-- ================= MOBILE CONTROLS ================= -->
+
 <div id="controls">
-  <button onclick="move('up')">▲</button>
+
+  <button onclick="move('up')">
+    ▲
+  </button>
+
   <div>
-    <button onclick="move('left')">◀</button>
-    <button onclick="move('down')">▼</button>
-    <button onclick="move('right')">▶</button>
+
+    <button onclick="move('left')">
+      ◀
+    </button>
+
+    <button onclick="move('down')">
+      ▼
+    </button>
+
+    <button onclick="move('right')">
+      ▶
+    </button>
+
   </div>
-  <button id="fire" onclick="shoot()">🔥</button>
+
+  <button id="fire" onclick="shoot()">
+    🔥
+  </button>
+
 </div>
+
+
+<!-- GAME SCRIPT -->
 
 <script src="script.js"></script>
+
 </body>
 </html>
