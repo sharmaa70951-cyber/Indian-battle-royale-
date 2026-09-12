@@ -1,17 +1,45 @@
 const game = document.getElementById("game");
 const player = document.getElementById("player");
+
 const hpText = document.getElementById("hp");
 const ammoText = document.getElementById("ammo");
 const aliveText = document.getElementById("alive");
-const zone = document.getElementById("zone");
+const weaponText = document.getElementById("weapon");
 
 let x = window.innerWidth / 2;
 let y = window.innerHeight / 2;
 
 let hp = 100;
-let ammo = 30;
 let alive = 100;
 let gameOver = false;
+
+let currentWeapon = "Pistol";
+let ammo = 30;
+
+const weapons = {
+  Pistol: {
+    damage: 50,
+    maxAmmo: 30,
+    cooldown: 450,
+    range: 500
+  },
+
+  "AK-47": {
+    damage: 25,
+    maxAmmo: 60,
+    cooldown: 160,
+    range: 600
+  },
+
+  Sniper: {
+    damage: 100,
+    maxAmmo: 10,
+    cooldown: 900,
+    range: 900
+  }
+};
+
+let lastShot = 0;
 
 const enemies = [];
 
@@ -38,58 +66,52 @@ function move(direction) {
   updatePlayer();
 }
 
-// ================= SAFE ZONE =================
+// ================= WEAPON =================
 
-let zoneRadius = 350;
-let zoneCenterX = window.innerWidth / 2;
-let zoneCenterY = window.innerHeight / 2;
+function changeWeapon(name) {
 
-function updateZone() {
-  zone.style.width = (zoneRadius * 2) + "px";
-  zone.style.height = (zoneRadius * 2) + "px";
-  zone.style.left = zoneCenterX + "px";
-  zone.style.top = zoneCenterY + "px";
+  if (!weapons[name]) return;
+
+  currentWeapon = name;
+  ammo = weapons[name].maxAmmo;
+
+  ammoText.textContent = ammo;
+  weaponText.textContent = currentWeapon;
 }
 
-function checkZone() {
+function pickupLoot(item, type) {
+
   if (gameOver) return;
 
-  const dx = x - zoneCenterX;
-  const dy = y - zoneCenterY;
+  if (type === "Pistol") {
+    changeWeapon("Pistol");
+  }
 
-  const distance = Math.sqrt(dx * dx + dy * dy);
+  if (type === "AK-47") {
+    changeWeapon("AK-47");
+  }
 
-  // Player outside safe zone
-  if (distance > zoneRadius) {
+  if (type === "Sniper") {
+    changeWeapon("Sniper");
+  }
 
-    hp -= 2;
+  if (type === "Ammo") {
+    ammo += 30;
+    ammoText.textContent = ammo;
+  }
 
-    if (hp < 0) hp = 0;
+  if (type === "Medkit") {
+    hp += 30;
+
+    if (hp > 100) hp = 100;
 
     hpText.textContent = hp;
-
-    if (hp <= 0) {
-      loseGame();
-    }
   }
+
+  item.remove();
 }
 
-// Zone धीरे-धीरे छोटी होगी
-setInterval(() => {
-
-  if (gameOver) return;
-
-  if (zoneRadius > 110) {
-    zoneRadius -= 25;
-    updateZone();
-  }
-
-}, 10000);
-
-// Zone damage
-setInterval(checkZone, 1000);
-
-// ================= ENEMY BOTS =================
+// ================= ENEMY =================
 
 function createEnemy() {
 
@@ -115,8 +137,11 @@ function createEnemy() {
 
   enemy.appendChild(head);
 
-  let ex = Math.random() * (window.innerWidth - 100) + 50;
-  let ey = Math.random() * (window.innerHeight - 180) + 100;
+  const ex =
+    Math.random() * (window.innerWidth - 100) + 50;
+
+  const ey =
+    Math.random() * (window.innerHeight - 180) + 100;
 
   enemy.style.left = ex + "px";
   enemy.style.top = ey + "px";
@@ -131,16 +156,24 @@ function createEnemy() {
   });
 }
 
-// Prototype bots
+// Prototype: 12 visible bots
 for (let i = 0; i < 12; i++) {
   createEnemy();
 }
 
-// ================= SHOOTING =================
+// ================= SHOOT =================
 
 function shoot() {
 
   if (gameOver) return;
+
+  const weapon = weapons[currentWeapon];
+
+  const now = Date.now();
+
+  if (now - lastShot < weapon.cooldown) return;
+
+  lastShot = now;
 
   if (ammo <= 0) {
     alert("Ammo खत्म!");
@@ -160,21 +193,32 @@ function shoot() {
     const dx = enemy.x - x;
     const dy = enemy.y - y;
 
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const distance = Math.sqrt(
+      dx * dx + dy * dy
+    );
 
-    if (distance < nearestDistance) {
+    if (
+      distance < nearestDistance &&
+      distance <= weapon.range
+    ) {
       nearestDistance = distance;
       nearest = enemy;
     }
   });
 
+  // Bullet
   const bullet = document.createElement("div");
 
   bullet.style.position = "absolute";
-  bullet.style.width = "7px";
-  bullet.style.height = "7px";
+  bullet.style.width =
+    currentWeapon === "Sniper" ? "9px" : "7px";
+
+  bullet.style.height =
+    currentWeapon === "Sniper" ? "9px" : "7px";
+
   bullet.style.borderRadius = "50%";
   bullet.style.background = "#ffd000";
+
   bullet.style.left = x + "px";
   bullet.style.top = y + "px";
   bullet.style.zIndex = "40";
@@ -184,16 +228,25 @@ function shoot() {
   let bx = x;
   let by = y;
 
-  let targetX = nearest ? nearest.x : x + 500;
-  let targetY = nearest ? nearest.y : y;
+  let targetX = nearest
+    ? nearest.x
+    : x + weapon.range;
+
+  let targetY = nearest
+    ? nearest.y
+    : y;
 
   const dx = targetX - bx;
   const dy = targetY - by;
 
-  const distance = Math.sqrt(dx * dx + dy * dy) || 1;
+  const distance =
+    Math.sqrt(dx * dx + dy * dy) || 1;
 
-  const vx = dx / distance * 14;
-  const vy = dy / distance * 14;
+  const speed =
+    currentWeapon === "Sniper" ? 22 : 14;
+
+  const vx = dx / distance * speed;
+  const vy = dy / distance * speed;
 
   const timer = setInterval(() => {
 
@@ -205,12 +258,15 @@ function shoot() {
 
     if (nearest && nearest.hp > 0) {
 
-      const hitX = Math.abs(bx - nearest.x);
-      const hitY = Math.abs(by - nearest.y);
+      const hitX =
+        Math.abs(bx - nearest.x);
+
+      const hitY =
+        Math.abs(by - nearest.y);
 
       if (hitX < 25 && hitY < 35) {
 
-        nearest.hp -= 50;
+        nearest.hp -= weapon.damage;
 
         bullet.remove();
         clearInterval(timer);
@@ -220,9 +276,11 @@ function shoot() {
           nearest.element.remove();
 
           alive--;
+
           aliveText.textContent = alive;
 
-          const index = enemies.indexOf(nearest);
+          const index =
+            enemies.indexOf(nearest);
 
           if (index !== -1) {
             enemies.splice(index, 1);
@@ -257,7 +315,8 @@ function enemyAttack() {
     const dx = x - enemy.x;
     const dy = y - enemy.y;
 
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const distance =
+      Math.sqrt(dx * dx + dy * dy);
 
     if (distance < 280) {
 
@@ -285,18 +344,91 @@ function moveEnemies() {
     const dx = x - enemy.x;
     const dy = y - enemy.y;
 
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const distance =
+      Math.sqrt(dx * dx + dy * dy);
 
     if (distance > 100 && distance > 0) {
 
-      enemy.x += dx / distance * 0.8;
-      enemy.y += dy / distance * 0.8;
+      enemy.x +=
+        dx / distance * 0.8;
+
+      enemy.y +=
+        dy / distance * 0.8;
     }
 
-    enemy.element.style.left = enemy.x + "px";
-    enemy.element.style.top = enemy.y + "px";
+    enemy.element.style.left =
+      enemy.x + "px";
+
+    enemy.element.style.top =
+      enemy.y + "px";
   });
 }
+
+// ================= SAFE ZONE =================
+
+let zoneRadius = 350;
+
+let zoneCenterX =
+  window.innerWidth / 2;
+
+let zoneCenterY =
+  window.innerHeight / 2;
+
+const zone = document.getElementById("zone");
+
+function updateZone() {
+
+  zone.style.width =
+    zoneRadius * 2 + "px";
+
+  zone.style.height =
+    zoneRadius * 2 + "px";
+
+  zone.style.left =
+    zoneCenterX + "px";
+
+  zone.style.top =
+    zoneCenterY + "px";
+}
+
+function checkZone() {
+
+  if (gameOver) return;
+
+  const dx = x - zoneCenterX;
+  const dy = y - zoneCenterY;
+
+  const distance =
+    Math.sqrt(dx * dx + dy * dy);
+
+  if (distance > zoneRadius) {
+
+    hp -= 2;
+
+    if (hp < 0) hp = 0;
+
+    hpText.textContent = hp;
+
+    if (hp <= 0) {
+      loseGame();
+    }
+  }
+}
+
+setInterval(() => {
+
+  if (gameOver) return;
+
+  if (zoneRadius > 110) {
+
+    zoneRadius -= 25;
+
+    updateZone();
+  }
+
+}, 10000);
+
+setInterval(checkZone, 1000);
 
 // ================= WIN =================
 
@@ -306,24 +438,10 @@ function checkWinner() {
 
     gameOver = true;
 
-    const message = document.createElement("div");
-
-    message.innerHTML =
-      "🏆 YOU WIN!<br><small>Last Player Standing</small>";
-
-    message.style.position = "fixed";
-    message.style.left = "50%";
-    message.style.top = "50%";
-    message.style.transform = "translate(-50%, -50%)";
-    message.style.zIndex = "200";
-    message.style.background = "rgba(0,0,0,.9)";
-    message.style.padding = "30px 45px";
-    message.style.borderRadius = "15px";
-    message.style.textAlign = "center";
-    message.style.fontSize = "32px";
-    message.style.fontWeight = "bold";
-
-    document.body.appendChild(message);
+    showMessage(
+      "🏆 YOU WIN!",
+      "Last Player Standing"
+    );
   }
 }
 
@@ -335,22 +453,51 @@ function loseGame() {
 
   gameOver = true;
 
-  const message = document.createElement("div");
+  showMessage(
+    "💀 ELIMINATED",
+    "Better luck next time"
+  );
+}
+
+// ================= MESSAGE =================
+
+function showMessage(title, subtitle) {
+
+  const message =
+    document.createElement("div");
 
   message.innerHTML =
-    "💀 ELIMINATED<br><small>Better luck next time</small>";
+    title +
+    "<br><small>" +
+    subtitle +
+    "</small>";
 
   message.style.position = "fixed";
   message.style.left = "50%";
   message.style.top = "50%";
-  message.style.transform = "translate(-50%, -50%)";
+
+  message.style.transform =
+    "translate(-50%, -50%)";
+
   message.style.zIndex = "200";
-  message.style.background = "rgba(0,0,0,.9)";
-  message.style.padding = "30px 45px";
-  message.style.borderRadius = "15px";
-  message.style.textAlign = "center";
-  message.style.fontSize = "30px";
-  message.style.fontWeight = "bold";
+
+  message.style.background =
+    "rgba(0,0,0,.9)";
+
+  message.style.padding =
+    "30px 45px";
+
+  message.style.borderRadius =
+    "15px";
+
+  message.style.textAlign =
+    "center";
+
+  message.style.fontSize =
+    "30px";
+
+  message.style.fontWeight =
+    "bold";
 
   document.body.appendChild(message);
 }
@@ -362,58 +509,3 @@ setInterval(moveEnemies, 40);
 
 updatePlayer();
 updateZone();
-
-window.addEventListener("resize", () => {
-
-  zoneCenterX = window.innerWidth / 2;
-  zoneCenterY = window.innerHeight / 2;
-
-  updateZone();
-});                   
-// ================= LOOT & WEAPONS =================
-
-let currentWeapon = "Pistol";
-let maxAmmo = 30;
-
-function pickupLoot(item, type) {
-
-  if (gameOver) return;
-
-  if (type === "Pistol") {
-    currentWeapon = "Pistol";
-    maxAmmo = 30;
-    ammo = maxAmmo;
-  }
-
-  if (type === "AK-47") {
-    currentWeapon = "AK-47";
-    maxAmmo = 60;
-    ammo = maxAmmo;
-  }
-
-  if (type === "Sniper") {
-    currentWeapon = "Sniper";
-    maxAmmo = 10;
-    ammo = maxAmmo;
-  }
-
-  if (type === "Ammo") {
-    ammo += 30;
-  }
-
-  if (type === "Medkit") {
-    hp += 30;
-
-    if (hp > 100) {
-      hp = 100;
-    }
-
-    hpText.textContent = hp;
-  }
-
-  ammoText.textContent = ammo;
-
-  document.getElementById("weapon").textContent = currentWeapon;
-
-  item.remove();
-}
