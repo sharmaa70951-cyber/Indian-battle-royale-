@@ -225,3 +225,20 @@ body {
   bottom: 40px;
   background: rgba(170,30,20,.8) !important;
 }
+.enemy {
+  box-shadow: 0 5px 12px rgba(0,0,0,.6);
+  transition: left .05s linear, top .05s linear;
+}
+
+.enemy::after {
+  content: "BOT";
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: white;
+  background: rgba(0,0,0,.6);
+  padding: 2px 4px;
+  border-radius: 3px;
+}
