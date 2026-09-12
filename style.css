@@ -242,3 +242,64 @@ body {
   padding: 2px 4px;
   border-radius: 3px;
 }
+/* LOOT */
+.loot {
+  position: absolute;
+  z-index: 15;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: rgba(0,0,0,.75);
+  border: 2px solid white;
+  font-size: 25px;
+  cursor: pointer;
+  animation: lootPulse 1s infinite alternate;
+}
+
+.pistol {
+  left: 25%;
+  top: 45%;
+}
+
+.ak {
+  left: 70%;
+  top: 55%;
+}
+
+.sniper {
+  left: 45%;
+  top: 25%;
+}
+
+.ammo {
+  left: 60%;
+  top: 35%;
+}
+
+.medkit {
+  left: 30%;
+  top: 70%;
+}
+
+@keyframes lootPulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.12);
+  }
+}
+
+#weaponHUD {
+  position: fixed;
+  z-index: 60;
+  top: 65px;
+  left: 12px;
+  background: rgba(0,0,0,.75);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: bold;
+}
