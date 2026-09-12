@@ -9,17 +9,24 @@
 
 <body>
 
-  <!-- LOBBY -->
+  <!-- ================= LOBBY ================= -->
   <div id="lobby">
-    <div class="game-title">INDIA BATTLE ROYALE</div>
+
+    <div class="game-title">
+      INDIA BATTLE ROYALE
+    </div>
 
     <div class="player">
       <div class="player-body">🧍</div>
     </div>
 
-    <div class="coins">🪙 Coins: <span id="coins">0</span></div>
+    <div class="coins">
+      🪙 Coins: <span id="coins">0</span>
+    </div>
 
-    <button id="startBtn">START</button>
+    <button id="startBtn">
+      START
+    </button>
 
     <div class="menu">
       <button>🛒 Store</button>
@@ -27,31 +34,113 @@
       <button>⚔️ Weapons</button>
       <button>👕 Dress</button>
     </div>
+
   </div>
 
-  <!-- GAME -->
+
+  <!-- ================= GAME ================= -->
   <div id="game" style="display:none;">
+
+    <!-- TOP BAR -->
     <div class="topbar">
-      ❤️ HP: <span id="hp">500</span>
-      <span>👥 Players: 100</span>
+
+      <span>
+        ❤️ HP: <span id="hp">500</span>
+      </span>
+
+      <span>
+        👥 Players: <span id="playerCount">100</span>
+      </span>
+
     </div>
 
+
+    <!-- MATCH FOUND SCREEN -->
+    <div id="matchScreen">
+
+      <div class="match-title">
+        MATCH FOUND
+      </div>
+
+      <div class="match-count">
+        👥 100 PLAYERS
+      </div>
+
+      <div id="countdown">
+        5
+      </div>
+
+      <div class="match-info">
+        तैयार हो जाओ...
+      </div>
+
+    </div>
+
+
+    <!-- TRAIN -->
+    <div id="train">
+      🚆
+    </div>
+
+
+    <!-- MAP -->
     <div id="map">
-      <div class="fort fort1">🏰<br>चित्तौड़गढ़</div>
-      <div class="fort fort2">🏰<br>मेहरानगढ़</div>
-      <div class="fort fort3">🏰<br>लाल किला</div>
 
-      <div id="player">🧍</div>
+      <!-- FORTS -->
+      <div class="fort fort1">
+        🏰
+        <br>
+        चित्तौड़गढ़
+      </div>
+
+      <div class="fort fort2">
+        🏰
+        <br>
+        मेहरानगढ़
+      </div>
+
+      <div class="fort fort3">
+        🏰
+        <br>
+        लाल किला
+      </div>
+
+
+      <!-- PLAYER -->
+      <div id="player">
+        🧍
+      </div>
+
     </div>
 
+
+    <!-- MOBILE CONTROLS -->
     <div class="controls">
-      <button onclick="move('up')">⬆️</button><br>
-      <button onclick="move('left')">⬅️</button>
-      <button onclick="move('down')">⬇️</button>
-      <button onclick="move('right')">➡️</button>
+
+      <button onclick="move('up')">
+        ⬆️
+      </button>
+
+      <br>
+
+      <button onclick="move('left')">
+        ⬅️
+      </button>
+
+      <button onclick="move('down')">
+        ⬇️
+      </button>
+
+      <button onclick="move('right')">
+        ➡️
+      </button>
+
     </div>
+
   </div>
+
 
   <script src="script.js"></script>
+
 </body>
 </html>
