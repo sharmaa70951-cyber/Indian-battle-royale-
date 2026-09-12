@@ -1,151 +1,67 @@
-const lobby = document.getElementById("lobby");
-const game = document.getElementById("game");
-const startBtn = document.getElementById("startBtn");
 const player = document.getElementById("player");
+const hpText = document.getElementById("hp");
+const ammoText = document.getElementById("ammo");
 
-const matchScreen = document.getElementById("matchScreen");
-const countdown = document.getElementById("countdown");
-const train = document.getElementById("train");
+let x = window.innerWidth / 2;
+let y = window.innerHeight / 2;
 
-let x = 50;
-let y = 55;
-let gameStarted = false;
+let hp = 100;
+let ammo = 30;
 
-
-/* ================= START MATCH ================= */
-
-startBtn.addEventListener("click", () => {
-
-  if (gameStarted) return;
-
-  gameStarted = true;
-
-  lobby.style.display = "none";
-  game.style.display = "block";
-
-  startMatch();
-
-});
-
-
-/* ================= MATCH SYSTEM ================= */
-
-function startMatch() {
-
-  matchScreen.style.display = "block";
-
-  let time = 5;
-
-  countdown.textContent = time;
-
-  const timer = setInterval(() => {
-
-    time--;
-
-    countdown.textContent = time;
-
-    if (time <= 0) {
-
-      clearInterval(timer);
-
-      matchScreen.style.display = "none";
-
-      startTrain();
-
-    }
-
-  }, 1000);
-
+function updatePlayer() {
+  player.style.left = x + "px";
+  player.style.top = y + "px";
 }
-
-
-/* ================= TRAIN ================= */
-
-function startTrain() {
-
-  train.style.display = "block";
-
-  train.style.left = "-120px";
-
-  setTimeout(() => {
-
-    train.style.left = "110%";
-
-  }, 100);
-
-  /*
-    Train लगभग 8 seconds में map को cross करेगी.
-    इसके बाद player को map पर control मिलेगा.
-  */
-
-  setTimeout(() => {
-
-    train.style.display = "none";
-
-    player.style.display = "block";
-
-  }, 8200);
-
-}
-
-
-/* ================= PLAYER MOVEMENT ================= */
 
 function move(direction) {
+  const speed = 25;
 
-  if (!gameStarted) return;
+  if (direction === "up") y -= speed;
+  if (direction === "down") y += speed;
+  if (direction === "left") x -= speed;
+  if (direction === "right") x += speed;
 
-  const speed = 2;
+  x = Math.max(20, Math.min(window.innerWidth - 20, x));
+  y = Math.max(80, Math.min(window.innerHeight - 100, y));
 
-  if (direction === "up") {
-    y -= speed;
-  }
-
-  if (direction === "down") {
-    y += speed;
-  }
-
-  if (direction === "left") {
-    x -= speed;
-  }
-
-  if (direction === "right") {
-    x += speed;
-  }
-
-
-  /* Map के बाहर जाने से रोकना */
-
-  x = Math.max(3, Math.min(97, x));
-  y = Math.max(8, Math.min(92, y));
-
-
-  player.style.left = x + "%";
-  player.style.top = y + "%";
-
+  updatePlayer();
 }
 
-
-/* ================= KEYBOARD CONTROLS ================= */
-
-document.addEventListener("keydown", (event) => {
-
-  const key = event.key.toLowerCase();
-
-  if (key === "arrowup" || key === "w") {
-    move("up");
+function shoot() {
+  if (ammo <= 0) {
+    alert("Ammo खत्म!");
+    return;
   }
 
-  if (key === "arrowdown" || key === "s") {
-    move("down");
-  }
+  ammo--;
+  ammoText.textContent = ammo;
 
-  if (key === "arrowleft" || key === "a") {
-    move("left");
-  }
+  const bullet = document.createElement("div");
 
-  if (key === "arrowright" || key === "d") {
-    move("right");
-  }
+  bullet.style.position = "absolute";
+  bullet.style.width = "8px";
+  bullet.style.height = "8px";
+  bullet.style.borderRadius = "50%";
+  bullet.style.background = "#ffd000";
+  bullet.style.left = x + "px";
+  bullet.style.top = y + "px";
+  bullet.style.zIndex = "30";
 
-});
+  document.getElementById("game").appendChild(bullet);
+
+  let bx = x;
+  let by = y;
+
+  const timer = setInterval(() => {
+    bx += 12;
+    bullet.style.left = bx + "px";
+    bullet.style.top = by + "px";
+
+    if (bx > window.innerWidth) {
+      clearInterval(timer);
+      bullet.remove();
+    }
+  }, 20);
+}
+
+updatePlayer();
