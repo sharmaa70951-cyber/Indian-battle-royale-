@@ -1,146 +1,71 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>India Battle Royale</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-  <!-- ================= LOBBY ================= -->
-  <div id="lobby">
+<div id="hud">
+  <div>❤️ HP <span id="hp">100</span></div>
+  <div>👥 ALIVE <span id="alive">100</span></div>
+  <div>🔫 AMMO <span id="ammo">30</span></div>
+</div>
 
-    <div class="game-title">
-      INDIA BATTLE ROYALE
-    </div>
+<div id="game">
 
-    <div class="player">
-      <div class="player-body">🧍</div>
-    </div>
+  <!-- SAFE ZONE -->
+  <div id="zone"></div>
 
-    <div class="coins">
-      🪙 Coins: <span id="coins">0</span>
-    </div>
-
-    <button id="startBtn">
-      START
-    </button>
-
-    <div class="menu">
-      <button>🛒 Store</button>
-      <button>🎒 Vault</button>
-      <button>⚔️ Weapons</button>
-      <button>👕 Dress</button>
-    </div>
-
+  <!-- CHITTORGARH -->
+  <div class="fort chittor">
+    <div class="wall"></div>
+    <div class="tower t1"></div>
+    <div class="tower t2"></div>
+    <div class="gate">GATE</div>
+    <span>CHITTORGARH</span>
   </div>
 
-
-  <!-- ================= GAME ================= -->
-  <div id="game" style="display:none;">
-
-    <!-- TOP BAR -->
-    <div class="topbar">
-
-      <span>
-        ❤️ HP: <span id="hp">500</span>
-      </span>
-
-      <span>
-        👥 Players: <span id="playerCount">100</span>
-      </span>
-
-    </div>
-
-
-    <!-- MATCH FOUND SCREEN -->
-    <div id="matchScreen">
-
-      <div class="match-title">
-        MATCH FOUND
-      </div>
-
-      <div class="match-count">
-        👥 100 PLAYERS
-      </div>
-
-      <div id="countdown">
-        5
-      </div>
-
-      <div class="match-info">
-        तैयार हो जाओ...
-      </div>
-
-    </div>
-
-
-    <!-- TRAIN -->
-    <div id="train">
-      🚆
-    </div>
-
-
-    <!-- MAP -->
-    <div id="map">
-
-      <!-- FORTS -->
-      <div class="fort fort1">
-        🏰
-        <br>
-        चित्तौड़गढ़
-      </div>
-
-      <div class="fort fort2">
-        🏰
-        <br>
-        मेहरानगढ़
-      </div>
-
-      <div class="fort fort3">
-        🏰
-        <br>
-        लाल किला
-      </div>
-
-
-      <!-- PLAYER -->
-      <div id="player">
-        🧍
-      </div>
-
-    </div>
-
-
-    <!-- MOBILE CONTROLS -->
-    <div class="controls">
-
-      <button onclick="move('up')">
-        ⬆️
-      </button>
-
-      <br>
-
-      <button onclick="move('left')">
-        ⬅️
-      </button>
-
-      <button onclick="move('down')">
-        ⬇️
-      </button>
-
-      <button onclick="move('right')">
-        ➡️
-      </button>
-
-    </div>
-
+  <!-- RED FORT -->
+  <div class="fort redfort">
+    <div class="wall"></div>
+    <div class="tower t1"></div>
+    <div class="tower t2"></div>
+    <div class="gate">GATE</div>
+    <span>RED FORT</span>
   </div>
 
+  <!-- MEHRANGARH -->
+  <div class="fort mehrangarh">
+    <div class="wall"></div>
+    <div class="tower t1"></div>
+    <div class="tower t2"></div>
+    <div class="gate">GATE</div>
+    <span>MEHRANGARH</span>
+  </div>
 
-  <script src="script.js"></script>
+  <!-- PLAYER -->
+  <div id="player">
+    <div class="head"></div>
+    <div class="body"></div>
+    <div class="gun"></div>
+  </div>
 
+</div>
+
+<!-- MOBILE CONTROLS -->
+<div id="controls">
+  <button onclick="move('up')">▲</button>
+  <div>
+    <button onclick="move('left')">◀</button>
+    <button onclick="move('down')">▼</button>
+    <button onclick="move('right')">▶</button>
+  </div>
+  <button id="fire" onclick="shoot()">🔥</button>
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
